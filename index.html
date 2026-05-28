@@ -1,0 +1,1695 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Congela e Pronto">
+  <link rel="apple-touch-icon" href="congela_logo.png">
+  <meta name="theme-color" content="#3DB54A">
+  <title>Congela e Pronto</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    :root {
+      --primary: #3DB54A;
+      --secondary: #2A7A30;
+      --bg: #0d2b0d;
+      --card-bg: #102e10;
+      --card-border: rgba(61,181,74,0.25);
+      --card-border-glow: rgba(61,181,74,0.6);
+      --text: #FFFFFF;
+      --text-secondary: rgba(255,255,255,0.65);
+      --header-h: 56px;
+      --navbar-h: 60px;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Nunito', sans-serif;
+      overflow-x: hidden;
+    }
+
+    body {
+      min-height: 100vh;
+      min-height: -webkit-fill-available;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      z-index: -1;
+    }
+
+    #app {
+      max-width: 480px;
+      width: 100%;
+      margin: 0 auto;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* ── SCROLLBAR ── */
+    * { scrollbar-width: none; }
+    *::-webkit-scrollbar { display: none; }
+
+    /* ── SCREENS ── */
+    .screen {
+      display: none;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+    .screen.active { display: block; }
+    .screen.visible { opacity: 1; transform: translateY(0); }
+
+    /* ══════════════════════════════════
+       HEADER
+    ══════════════════════════════════ */
+    .app-header {
+      position: fixed;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 480px;
+      z-index: 200;
+      background: rgba(13,43,13,0.96);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(61,181,74,0.2);
+      padding-top: env(safe-area-inset-top, 0px);
+    }
+
+    .header-main-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: var(--header-h);
+      padding: 0 16px;
+    }
+
+    .header-logo {
+      height: 36px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-bell {
+      background: none;
+      border: none;
+      padding: 4px;
+      cursor: pointer;
+      color: rgba(255,255,255,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .header-bell svg { width: 22px; height: 22px; }
+
+    .header-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3DB54A, #2A7A30);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 15px;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    /* Header produto */
+    .header-product-inner {
+      display: flex;
+      align-items: center;
+      height: var(--header-h);
+      padding: 0 4px;
+    }
+
+    .btn-back {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      color: var(--primary);
+      font-size: 22px;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: opacity 0.15s;
+    }
+
+    .btn-back:active { opacity: 0.6; }
+
+    .header-product-title {
+      flex: 1;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-align: center;
+    }
+
+    .header-product-spacer {
+      width: 44px;
+      flex-shrink: 0;
+    }
+
+    /* ══════════════════════════════════
+       NAVBAR
+    ══════════════════════════════════ */
+    .navbar {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 480px;
+      z-index: 200;
+      background: rgba(13,43,13,0.96);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(61,181,74,0.2);
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    .navbar-inner {
+      display: flex;
+      height: var(--navbar-h);
+    }
+
+    .nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.4);
+      font-family: 'Nunito', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 8px 4px 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      transition: color 0.2s, background 0.3s;
+      position: relative;
+    }
+
+    .nav-item svg { width: 22px; height: 22px; }
+    .nav-item.active { color: var(--primary); }
+    .nav-item:active { background: rgba(61,181,74,0.1); }
+
+    .nav-dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 2px;
+      background: transparent;
+      margin-top: 1px;
+      transition: width 0.2s ease, background 0.2s ease;
+    }
+
+    .nav-item.active .nav-dot {
+      background: var(--primary);
+    }
+
+    /* ══════════════════════════════════
+       PAGE PADDING
+    ══════════════════════════════════ */
+    .page {
+      padding-top: calc(var(--header-h) + env(safe-area-inset-top, 0px));
+      padding-bottom: calc(var(--navbar-h) + env(safe-area-inset-bottom, 0px) + 16px);
+    }
+
+    .page-product {
+      padding-top: calc(var(--header-h) + env(safe-area-inset-top, 0px));
+      padding-bottom: calc(var(--navbar-h) + env(safe-area-inset-bottom, 0px) + 20px);
+    }
+
+    /* ══════════════════════════════════
+       GREETING BLOCK
+    ══════════════════════════════════ */
+    .greeting {
+      padding: 20px 20px 8px;
+    }
+
+    .greeting-sub {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+    }
+
+    .greeting-title {
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--text);
+      letter-spacing: 0.5px;
+    }
+
+    /* ══════════════════════════════════
+       SECTION HEADER
+    ══════════════════════════════════ */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px 12px;
+    }
+
+    .section-header-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .section-badge {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--primary);
+      background: rgba(61,181,74,0.15);
+      border-radius: 20px;
+      padding: 3px 10px;
+    }
+
+    /* ══════════════════════════════════
+       CAROUSEL
+    ══════════════════════════════════ */
+    .carousel-outer {
+      position: relative;
+    }
+
+    .carousel-wrap {
+      display: flex;
+      overflow-x: scroll;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      gap: 12px;
+      padding: 0 20px 4px;
+      scroll-padding-left: 20px;
+    }
+
+    .carousel-card {
+      width: 72vw;
+      max-width: 260px;
+      flex-shrink: 0;
+      scroll-snap-align: start;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(61,181,74,0.3);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      background: var(--card-bg);
+      cursor: pointer;
+      transition: transform 0.15s;
+    }
+
+    .carousel-card:active { transform: scale(0.97); }
+
+    .carousel-card-img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      display: block;
+      background: rgba(61,181,74,0.06);
+      min-height: 160px;
+    }
+
+    .carousel-card-body {
+      padding: 14px;
+    }
+
+    .carousel-card-name {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 4px;
+      line-height: 1.3;
+    }
+
+    .carousel-card-sub {
+      font-size: 12px;
+      color: var(--text-secondary);
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      line-height: 1.45;
+    }
+
+    .carousel-card-btn {
+      margin-top: 12px;
+      width: 100%;
+      height: 38px;
+      background: var(--primary);
+      border: none;
+      border-radius: 10px;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    .carousel-card-btn:active {
+      background: var(--secondary);
+      transform: scale(0.98);
+    }
+
+    /* ── SETAS ── */
+    .carousel-arrow {
+      position: absolute;
+      top: calc(160px / 2 - 18px);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(13,43,13,0.85);
+      border: 1px solid rgba(61,181,74,0.4);
+      color: var(--primary);
+      font-size: 20px;
+      font-weight: 300;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 10;
+      transition: opacity 0.2s, background 0.15s;
+      line-height: 1;
+      user-select: none;
+    }
+
+    .carousel-arrow:active { background: rgba(13,43,13,1); }
+    .carousel-arrow.hidden { opacity: 0; pointer-events: none; }
+
+    .carousel-arrow-left  { left: 8px; }
+    .carousel-arrow-right { right: 8px; }
+
+    /* ── DOTS ── */
+    .carousel-dots {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      padding: 12px 0 4px;
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.25);
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .dot.active {
+      width: 18px;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--primary);
+    }
+
+    /* ══════════════════════════════════
+       LOCKED CARDS SECTION
+    ══════════════════════════════════ */
+    .locked-section {
+      padding: 0 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .locked-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px;
+      background: linear-gradient(135deg, #102e10, #0d2b0d);
+      border: 1px solid rgba(61,181,74,0.12);
+      border-radius: 16px;
+      height: 80px;
+      position: relative;
+      cursor: default;
+    }
+
+    .locked-icon-box {
+      width: 44px;
+      height: 44px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .locked-texts { flex: 1; }
+
+    .locked-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 2px;
+    }
+
+    .locked-sub {
+      font-size: 12px;
+      color: rgba(255,255,255,0.25);
+    }
+
+    .badge-soon-locked {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 11px;
+      font-weight: 700;
+      background: rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.3);
+      border-radius: 20px;
+      padding: 2px 8px;
+    }
+
+    /* ══════════════════════════════════
+       PRODUCT DETAIL
+    ══════════════════════════════════ */
+    .product-hero {
+      position: relative;
+      width: 100%;
+      height: 240px;
+    }
+
+    .product-hero-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      background: rgba(61,181,74,0.06);
+      min-height: 240px;
+    }
+
+    .product-hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(13,43,13,0.1) 0%, #0d2b0d 100%);
+    }
+
+    .product-hero-text {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      right: 20px;
+    }
+
+    .product-hero-name {
+      font-size: 22px;
+      font-weight: 900;
+      color: #fff;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      line-height: 1.25;
+    }
+
+    .product-hero-sub {
+      font-size: 13px;
+      color: rgba(255,255,255,0.8);
+      margin-top: 6px;
+      line-height: 1.45;
+    }
+
+    .product-hero-desc {
+      font-size: 13px;
+      color: rgba(255,255,255,0.7);
+      margin-top: 4px;
+      line-height: 1.5;
+      font-style: italic;
+    }
+
+    .materials-section {
+      padding: 20px;
+    }
+
+    .materials-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+
+    .material-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--card-bg);
+      border: 1px solid rgba(61,181,74,0.2);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      transition: background 0.15s;
+    }
+
+    .material-item:active { background: rgba(61,181,74,0.08); }
+
+    .material-item.is-soon {
+      cursor: default;
+      pointer-events: none;
+    }
+
+    .material-item-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .material-item-icon.has-link {
+      background: rgba(61,181,74,0.12);
+      color: var(--primary);
+    }
+
+    .material-item-icon.is-soon {
+      background: rgba(255,255,255,0.05);
+      color: rgba(255,255,255,0.25);
+    }
+
+    .material-item-center { flex: 1; min-width: 0; }
+
+    .material-item-name {
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+
+    .material-item-name.has-link { color: var(--text); }
+    .material-item-name.is-soon  { color: rgba(255,255,255,0.3); }
+
+    .material-item-status {
+      font-size: 11px;
+      margin-top: 3px;
+      font-weight: 600;
+    }
+
+    .material-item-status.has-link { color: var(--primary); }
+    .material-item-status.is-soon  { color: rgba(255,255,255,0.3); }
+
+    .material-item-right { flex-shrink: 0; }
+
+    .material-arrow-icon {
+      font-size: 20px;
+      color: var(--primary);
+      font-weight: 300;
+      line-height: 1;
+    }
+
+    .badge-em-breve {
+      font-size: 10px;
+      font-weight: 700;
+      background: rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.3);
+      border-radius: 20px;
+      padding: 3px 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    /* ══════════════════════════════════
+       SUA ÁREA
+    ══════════════════════════════════ */
+    .profile-card {
+      margin: 0 20px 24px;
+      background: linear-gradient(135deg, #102e10, #0d2b0d);
+      border: 1px solid rgba(61,181,74,0.3);
+      border-radius: 20px;
+      padding: 28px 24px;
+      text-align: center;
+    }
+
+    .profile-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3DB54A, #2A7A30);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 32px;
+      color: #fff;
+      margin: 0 auto 14px;
+    }
+
+    .profile-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+
+    .profile-badge {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 700;
+      background: rgba(61,181,74,0.15);
+      color: var(--primary);
+      border-radius: 20px;
+      padding: 5px 16px;
+    }
+
+    .action-list {
+      padding: 0 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .action-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--card-bg);
+      border: 1px solid rgba(61,181,74,0.2);
+      border-radius: 14px;
+      padding: 16px;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      font-family: 'Nunito', sans-serif;
+      width: 100%;
+      text-align: left;
+      transition: background 0.15s;
+    }
+
+    .action-item:active { background: rgba(61,181,74,0.08); }
+
+    .action-icon-box {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: rgba(61,181,74,0.12);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .action-icon-box svg { width: 20px; height: 20px; }
+
+    .action-texts { flex: 1; }
+
+    .action-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.3;
+    }
+
+    .action-sub {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .action-arrow {
+      font-size: 20px;
+      color: var(--primary);
+      font-weight: 300;
+      flex-shrink: 0;
+    }
+
+    .profile-footer {
+      font-size: 12px;
+      color: rgba(255,255,255,0.3);
+      text-align: center;
+      padding: 28px 0 12px;
+    }
+
+    /* ══════════════════════════════════
+       TOAST
+    ══════════════════════════════════ */
+    #toast {
+      position: fixed;
+      top: calc(var(--header-h) + env(safe-area-inset-top, 0px) + 8px);
+      left: 16px;
+      right: 16px;
+      max-width: 448px;
+      margin: 0 auto;
+      z-index: 9999;
+      background: var(--primary);
+      color: #fff;
+      font-family: 'Nunito', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.5;
+      padding: 14px 18px;
+      border-radius: 14px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(-20px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ══════════════════════════════════
+       MODAL (bottom sheet)
+    ══════════════════════════════════ */
+    #modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9998;
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    #modal-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-sheet {
+      background: #102e10;
+      border-radius: 24px 24px 0 0;
+      border-top: 1px solid rgba(61,181,74,0.3);
+      padding: 28px 24px calc(28px + env(safe-area-inset-bottom, 0px));
+      width: 100%;
+      max-width: 480px;
+      max-height: 80vh;
+      overflow-y: auto;
+      transform: translateY(40px);
+      transition: transform 0.3s ease;
+    }
+
+    #modal-overlay.show .modal-sheet { transform: translateY(0); }
+
+    .modal-handle {
+      width: 36px;
+      height: 4px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 2px;
+      margin: 0 auto 20px;
+    }
+
+    .modal-emoji {
+      text-align: center;
+      font-size: 40px;
+      line-height: 1;
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text);
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    .modal-sub {
+      font-size: 13px;
+      color: var(--text-secondary);
+      text-align: center;
+      margin-top: 6px;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    .modal-os-card {
+      background: rgba(255,255,255,0.05);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 10px;
+    }
+
+    .modal-os-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .modal-os-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .modal-os-icon.safari { background: #006CFF; }
+    .modal-os-icon.chrome { background: #EA4335; }
+
+    .modal-os-text {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+
+    .modal-os-text em {
+      font-style: normal;
+      background: rgba(255,255,255,0.1);
+      border-radius: 4px;
+      padding: 1px 5px;
+    }
+
+    .btn-modal-close {
+      width: 100%;
+      height: 50px;
+      background: var(--primary);
+      border: none;
+      border-radius: 14px;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 700;
+      font-size: 16px;
+      color: #fff;
+      margin-top: 20px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .btn-modal-close:active { background: var(--secondary); }
+  </style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- TOAST -->
+  <div id="toast"></div>
+
+  <!-- MODAL bottom sheet -->
+  <div id="modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal-sheet" id="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-emoji">📱</div>
+      <div class="modal-title">Instale o app no celular</div>
+      <div class="modal-sub">Acesse com 1 toque, como um app nativo</div>
+
+      <div class="modal-os-card">
+        <div class="modal-os-title">
+          <div class="modal-os-icon safari">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="12" x2="16" y2="14"/>
+            </svg>
+          </div>
+          iPhone / Safari
+        </div>
+        <div class="modal-os-text">Toque em <em>↑ Compartilhar</em> e depois em <em>Adicionar à Tela de Início</em></div>
+      </div>
+
+      <div class="modal-os-card">
+        <div class="modal-os-title">
+          <div class="modal-os-icon chrome">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5">
+              <circle cx="12" cy="12" r="10"/>
+              <circle cx="12" cy="12" r="4"/>
+            </svg>
+          </div>
+          Android / Chrome
+        </div>
+        <div class="modal-os-text">Toque em <em>⋮</em> e depois em <em>Adicionar à tela inicial</em></div>
+      </div>
+
+      <button class="btn-modal-close" id="btn-modal-close">Entendi!</button>
+    </div>
+  </div>
+
+  <!-- HEADER PADRÃO -->
+  <header class="app-header" id="header-default">
+    <div class="header-main-inner">
+      <img src="congela_logo.png" alt="Congela e Pronto" class="header-logo" loading="lazy" decoding="async" onerror="this.style.background='#1a3d1a';this.style.minHeight='36px';">
+      <div class="header-right">
+        <button class="header-bell" aria-label="Notificações">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+        </button>
+        <div class="header-avatar">M</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- HEADER PRODUTO -->
+  <header class="app-header" id="header-product" style="display:none;">
+    <div class="header-product-inner">
+      <button class="btn-back" id="btn-back" aria-label="Voltar">&#8592;</button>
+      <div class="header-product-title" id="product-header-title"></div>
+      <div class="header-product-spacer"></div>
+    </div>
+  </header>
+
+  <!-- ══════════════════════════════════════
+       SCREEN: INÍCIO
+  ══════════════════════════════════════ -->
+  <div class="screen" id="screen-inicio" role="main">
+    <div class="page">
+      <div class="greeting">
+        <div class="greeting-sub">Bem-vinda de volta 👋</div>
+        <div class="greeting-title">SEUS MÓDULOS</div>
+      </div>
+
+      <div class="section-header">
+        <span class="section-header-title">Acesse seus módulos</span>
+        <span class="section-badge">3 itens</span>
+      </div>
+
+      <div class="carousel-outer" id="outer-inicio">
+        <button class="carousel-arrow carousel-arrow-left hidden" id="arrow-left-inicio" aria-label="Anterior">&#8249;</button>
+        <div class="carousel-wrap" id="carousel-inicio"></div>
+        <button class="carousel-arrow carousel-arrow-right" id="arrow-right-inicio" aria-label="Próximo">&#8250;</button>
+      </div>
+      <div class="carousel-dots" id="dots-inicio"></div>
+
+      <div class="section-header" style="padding-top:20px;">
+        <span class="section-header-title">Acesse nossos produtos</span>
+      </div>
+
+      <div class="locked-section">
+        <div class="locked-card">
+          <div class="locked-icon-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2" width="20" height="20">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </div>
+          <div class="locked-texts">
+            <div class="locked-title">Novos Produtos</div>
+            <div class="locked-sub">Em breve para você</div>
+          </div>
+          <span class="badge-soon-locked">EM BREVE</span>
+        </div>
+        <div class="locked-card">
+          <div class="locked-icon-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2" width="20" height="20">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </div>
+          <div class="locked-texts">
+            <div class="locked-title">Novos Produtos</div>
+            <div class="locked-sub">Em breve para você</div>
+          </div>
+          <span class="badge-soon-locked">EM BREVE</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SCREEN: BÔNUS
+  ══════════════════════════════════════ -->
+  <div class="screen" id="screen-bonus" role="main">
+    <div class="page">
+      <div class="greeting">
+        <div class="greeting-sub">Seus bônus 🎁</div>
+        <div class="greeting-title">CONTEÚDO EXCLUSIVO</div>
+      </div>
+      <div class="section-header">
+        <span class="section-header-title">Acesse seus bônus</span>
+        <span class="section-badge">1 item</span>
+      </div>
+      <div class="carousel-outer" id="outer-bonus">
+        <button class="carousel-arrow carousel-arrow-left hidden" id="arrow-left-bonus" aria-label="Anterior">&#8249;</button>
+        <div class="carousel-wrap" id="carousel-bonus"></div>
+        <button class="carousel-arrow carousel-arrow-right hidden" id="arrow-right-bonus" aria-label="Próximo">&#8250;</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SCREEN: CHEF DANI
+  ══════════════════════════════════════ -->
+  <div class="screen" id="screen-chef" role="main">
+    <div class="page">
+      <div class="greeting">
+        <div class="greeting-sub">Conteúdo especial 👩‍🍳</div>
+        <div class="greeting-title">CHEF DANI</div>
+      </div>
+      <div class="section-header">
+        <span class="section-header-title">Acesse o conteúdo</span>
+        <span class="section-badge">1 item</span>
+      </div>
+      <div class="carousel-outer" id="outer-chef">
+        <button class="carousel-arrow carousel-arrow-left hidden" id="arrow-left-chef" aria-label="Anterior">&#8249;</button>
+        <div class="carousel-wrap" id="carousel-chef"></div>
+        <button class="carousel-arrow carousel-arrow-right hidden" id="arrow-right-chef" aria-label="Próximo">&#8250;</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SCREEN: PRODUTO
+  ══════════════════════════════════════ -->
+  <div class="screen" id="screen-product" role="main">
+    <div class="page-product">
+      <div class="product-hero">
+        <img src="" alt="" class="product-hero-img" id="product-cover" loading="lazy" decoding="async" onerror="this.style.background='#1a3d1a';this.style.minHeight='240px';">
+        <div class="product-hero-overlay"></div>
+        <div class="product-hero-text">
+          <div class="product-hero-name" id="product-title"></div>
+          <div class="product-hero-sub" id="product-subtitle"></div>
+          <div class="product-hero-desc" id="product-desc"></div>
+        </div>
+      </div>
+      <div class="materials-section">
+        <div class="materials-title">📦 Seus materiais</div>
+        <div id="materials-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SCREEN: SUA ÁREA
+  ══════════════════════════════════════ -->
+  <div class="screen" id="screen-area" role="main">
+    <div class="page">
+      <div class="greeting">
+        <div class="greeting-sub">Olá, mamãe! 💚</div>
+        <div class="greeting-title">SUA ÁREA</div>
+      </div>
+
+      <div class="profile-card">
+        <div class="profile-avatar">M</div>
+        <div class="profile-name">Membro Congela e Pronto</div>
+        <div class="profile-badge">✓ Acesso Ativo</div>
+      </div>
+
+      <div class="action-list">
+        <!-- SUBSTITUA ANTES DE GERAR: insira o link de suporte aqui, ex: https://wa.me/5511999999999 -->
+        <a href="https://wa.me/5511999999999" target="_blank" rel="noopener noreferrer" class="action-item">
+          <div class="action-icon-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            </svg>
+          </div>
+          <div class="action-texts">
+            <div class="action-title">Falar com o suporte</div>
+            <div class="action-sub">Estamos aqui pra te ajudar</div>
+          </div>
+          <div class="action-arrow">›</div>
+        </a>
+
+        <!-- SUBSTITUA ANTES DE GERAR: insira o link do grupo aqui, ex: https://chat.whatsapp.com/XXXXX -->
+        <a href="https://chat.whatsapp.com/XXXXX" target="_blank" rel="noopener noreferrer" class="action-item">
+          <div class="action-icon-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <div class="action-texts">
+            <div class="action-title">Grupo de membros</div>
+            <div class="action-sub">Comunidade exclusiva</div>
+          </div>
+          <div class="action-arrow">›</div>
+        </a>
+
+        <button class="action-item" id="btn-install-pwa" style="background: var(--card-bg); border: 1px solid rgba(61,181,74,0.2);">
+          <div class="action-icon-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="5" y="2" width="14" height="20" rx="2"/>
+              <line x1="12" y1="18" x2="12.01" y2="18"/>
+            </svg>
+          </div>
+          <div class="action-texts">
+            <div class="action-title">Instalar o app no celular</div>
+            <div class="action-sub">Acesso rápido na sua tela inicial</div>
+          </div>
+          <div class="action-arrow">›</div>
+        </button>
+      </div>
+
+      <div class="profile-footer">Congela e Pronto · v1.0</div>
+    </div>
+  </div>
+
+  <!-- NAVBAR -->
+  <nav class="navbar" role="navigation" aria-label="Navegação principal">
+    <div class="navbar-inner">
+      <button class="nav-item active" id="nav-inicio" data-tab="inicio" aria-label="Início">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+        Início
+        <div class="nav-dot"></div>
+      </button>
+      <button class="nav-item" id="nav-bonus" data-tab="bonus" aria-label="Bônus">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="20 12 20 22 4 22 4 12"/>
+          <rect x="2" y="7" width="20" height="5"/>
+          <line x1="12" y1="22" x2="12" y2="7"/>
+          <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/>
+          <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>
+        </svg>
+        Bônus
+        <div class="nav-dot"></div>
+      </button>
+      <button class="nav-item" id="nav-chef" data-tab="chef" aria-label="Chef Dani">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"/>
+          <line x1="6" y1="17" x2="18" y2="17"/>
+        </svg>
+        Chef Dani
+        <div class="nav-dot"></div>
+      </button>
+      <button class="nav-item" id="nav-area" data-tab="area" aria-label="Sua Área">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+        Sua Área
+        <div class="nav-dot"></div>
+      </button>
+    </div>
+  </nav>
+
+</div><!-- /app -->
+
+<script>
+  // ══════════════════════════════════════════════════════
+  // DADOS DOS PRODUTOS
+  // ══════════════════════════════════════════════════════
+  const products = [
+    {
+      id: 1,
+      name: 'Congela & Pronto',
+      subtitle: 'Mais de 100 receitas para congelar e resolver a lancheira da semana',
+      cover: 'capa_Congela___Pronto.png',
+      tab: 'inicio',
+      desc: '',
+      materials: [
+        { nome: '+60 Receitas', link: 'https://drive.google.com/drive/folders/1Zd3yvRaCByn-l_uTQHRMQeNpBv_4ctxx?usp=sharing', tipo: 'pdf' },
+        { nome: 'Cardápios da Semana Prontos', link: 'https://drive.google.com/drive/folders/1pJ7-mIGOdhJTRVe4vne8HvflBXODda5l?usp=sharing', tipo: 'pdf' },
+        { nome: 'Cardápios Editáveis', link: 'https://drive.google.com/drive/folders/1R8ndlvynPSBnIHnkYJBA_y_9NgZUW8WD?usp=sharing', tipo: 'pdf' },
+        { nome: 'Bebidas Nutritivas e Refrescantes', link: 'https://drive.google.com/drive/folders/1iiUGMvnhIz_c8qhaqXocNKRwhwEouZVd?usp=sharing', tipo: 'pdf' },
+        { nome: 'Lanchinhos Doces sem Exagero', link: 'https://drive.google.com/drive/folders/1HgKPgEVVja4r_9ZrT6NDfwDBvxBmCdhu?usp=sharing', tipo: 'pdf' },
+        { nome: 'Receitas Para Todas as Fases', link: 'https://drive.google.com/drive/folders/1noCoIB75N8Eko6J0QNPdgMCwfRiRfEk1?usp=sharing', tipo: 'pdf' },
+        { nome: 'Segredo do Congelamento Prático', link: 'https://drive.google.com/drive/folders/1TtToQheZ4-SUITYS1KGZ_cPg9XhI5HGQ?usp=sharing', tipo: 'pdf' }
+      ]
+    },
+    {
+      id: 2,
+      name: '100 Receitas Criativas',
+      subtitle: 'Receitas simples com ingredientes de casa, todas testadas pra congelar',
+      cover: 'capa_100_Receitas_Criativas.png',
+      tab: 'inicio',
+      desc: '',
+      materials: [
+        { nome: '100 Receitas Criativas 2.0', link: 'https://drive.google.com/drive/folders/1Tl-9bSrxLcGtZpp8mIS_ssNR7ibqU3kL?usp=sharing', tipo: 'pdf' }
+      ]
+    },
+    {
+      id: 3,
+      name: 'Receitas em Vídeo 2.0',
+      subtitle: 'Videoaulas passo a passo direto no celular',
+      cover: 'capa_Receitas_em_Video_2_0.png',
+      tab: 'inicio',
+      desc: '',
+      materials: [
+        { nome: '✨ Donuts de Queijo',                    link: 'https://drive.google.com/file/d/1kt27nHQrgI9BMo2mAY9StfPAoNCaPVcG/view?usp=sharing', tipo: 'video' },
+        { nome: 'Batata Sorriso',                         link: 'https://drive.google.com/file/d/12X0Y6MURW_hHEmaEBLPMHnuOq_1V-EWP/view?usp=sharing', tipo: 'video' },
+        { nome: 'Biscoito de Leite em Pó',                link: 'https://drive.google.com/file/d/1CLBfOp5rrpAe9WYIL-VXW6qafiaxCShm/view?usp=sharing', tipo: 'video' },
+        { nome: 'Biscoito de Maizena',                    link: 'https://drive.google.com/file/d/1ryD2eaQvxlTH9py5TcmtAUutkxL4JQ39/view?usp=sharing', tipo: 'video' },
+        { nome: 'Biscoito',                               link: 'https://drive.google.com/file/d/17nnamRiWul-RtzaD9zGH9vZz-RvADgQg/view?usp=sharing', tipo: 'video' },
+        { nome: 'Bolinha de Frango',                      link: 'https://drive.google.com/file/d/1NLdlYzbSn1ITFwBua1dtggjPXUuMQiMl/view?usp=sharing', tipo: 'video' },
+        { nome: 'Bolinhas Crocantes de Batata',           link: 'https://drive.google.com/file/d/15uswawBkCYrYCCN-oMXsMf19gSxuOW3o/view?usp=sharing', tipo: 'video' },
+        { nome: 'Bolinho de Iorgute',                     link: 'https://drive.google.com/file/d/1GVP6Q2FOJpeuQiUpaTmejensvsx_U_NE/view?usp=sharing', tipo: 'video' },
+        { nome: 'Bolinho de Laranja 🧡',                  link: 'https://drive.google.com/file/d/1kxVx4L7a027OLdEqkNYKxF97zXoKOVUG/view?usp=sharing', tipo: 'video' },
+        { nome: 'Bolinho Salgado',                        link: 'https://drive.google.com/file/d/17yQSgq0unqi_ZYFLiMxuaKaK2-d17x9D/view?usp=sharing', tipo: 'video' },
+        { nome: 'Bolinho sem Glúten',                     link: 'https://drive.google.com/file/d/1Wb4HlD-uflIQjF0elkM-C-6lvKw2L7mp/view?usp=sharing', tipo: 'video' },
+        { nome: 'Cookies',                                link: 'https://drive.google.com/file/d/11oTZB4lQt0RhR-v6XK1rNYRfJg5LS9ax/view?usp=sharing', tipo: 'video' },
+        { nome: 'Gomas Deliciosas',                       link: 'https://drive.google.com/file/d/1Qg2Kkk5YJX0GHuJG0fB_mUdr7JaL9LhL/view?usp=sharing', tipo: 'video' },
+        { nome: '✨ Mini Churros',                        link: 'https://drive.google.com/file/d/1yK27_5rUHou_rGbrORoUj2HLvdU-0rsr/view?usp=sharing', tipo: 'video' },
+        { nome: 'Mini Pizza Caseira',                     link: 'https://drive.google.com/file/d/1dSnHj0Z8laMV0AkDVjwWFmLd36zNX6Jk/view?usp=sharing', tipo: 'video' },
+        { nome: 'Mini Pizza',                             link: 'https://drive.google.com/file/d/1PBexnj0KarA-V9OUCVY0Qi8FF7tBRNHh/view?usp=sharing', tipo: 'video' },
+        { nome: 'Pastel Assado de Carne',                 link: 'https://drive.google.com/file/d/1JtzsL-kEmcpKmPYQ9zHY7p8J8BFUfWVe/view?usp=sharing', tipo: 'video' },
+        { nome: 'Sobremesa no Copinho',                   link: 'https://drive.google.com/file/d/1qX8C82QV9RkZAWMLSlQQHnpUMmu4-qV_/view?usp=sharing', tipo: 'video' },
+        { nome: 'Três Formas de Preparar Pão de Forma',   link: 'https://drive.google.com/file/d/1lWGrdkR0hxW77Yr-Vacj7Q-1WtnCnDcZ/view?usp=sharing', tipo: 'video' }
+      ]
+    },
+    {
+      id: 4,
+      name: 'Bônus Exclusivos',
+      subtitle: 'Conteúdos extras pra turbinar sua rotina de lancheira',
+      cover: 'capa_Bonus_Exclusivos.png',
+      tab: 'bonus',
+      desc: '',
+      materials: [
+        { nome: 'Atividades de Educação Nutricional',              link: 'https://drive.google.com/drive/folders/184jiNiIpCxFuYx-fyy9rJML8STvKQ5t-?usp=sharing', tipo: 'pdf' },
+        { nome: 'Checklist Visual de Evolução para Crianças',      link: 'https://drive.google.com/drive/folders/1qeeGS0JTThmPfyOF2m22iW7q5kk7A6a2?usp=sharing', tipo: 'pdf' },
+        { nome: 'Pack de Atividades Infantis',                     link: 'https://drive.google.com/drive/folders/1rrbs-ZYw1ylIL0mkzlYm5mon8mkWAqaU?usp=sharing', tipo: 'pdf' },
+        { nome: 'Kit de Etiquetas Inteligentes para Freezer',      link: 'https://drive.google.com/file/d/1mw2PzBfodgOe_4NMwL9hjVxCvSn-FSpv/view?usp=sharing', tipo: 'pdf' },
+        { nome: 'Planner Premium de Preparação e Congelamento',    link: 'https://drive.google.com/file/d/16CB_OP_Y0nrpYNcy40_3q7R8gblki4Tu/view?usp=sharing', tipo: 'pdf' }
+      ]
+    },
+    {
+      id: 5,
+      name: 'Sua Chef Pessoal',
+      subtitle: 'Receitas e dicas da Chef Dani exclusivamente pra você',
+      cover: 'Sua_Chef_Pessoal.png',
+      tab: 'chef',
+      desc: 'A Chef Dani é sua assistente 24h. Clique abaixo para conversar com ela agora mesmo.',
+      materials: [
+        { nome: 'Falar com a Chef Dani', link: 'https://chatgpt.com/g/g-67f891c1876081918d3b323e863c9307-chef-dani-sua-assistente-24-horas', tipo: 'video' }
+      ]
+    }
+  ];
+
+  // ══════════════════════════════════════════════════════
+  // ESTADO
+  // ══════════════════════════════════════════════════════
+  let currentTab = 'inicio';
+  let previousTab = 'inicio';
+  let transitionLock = false;
+
+  // ══════════════════════════════════════════════════════
+  // BUILD CAROUSEL CARD
+  // ══════════════════════════════════════════════════════
+  function buildCarouselCard(product) {
+    const card = document.createElement('div');
+    card.className = 'carousel-card';
+    card.innerHTML = `
+      <img src="${product.cover}" alt="${product.name}" class="carousel-card-img" loading="lazy" decoding="async" onerror="this.style.background='#1a3d1a';this.style.minHeight='160px';">
+      <div class="carousel-card-body">
+        <div class="carousel-card-name">${product.name}</div>
+        <div class="carousel-card-sub">${product.subtitle}</div>
+        <button class="carousel-card-btn">Acessar</button>
+      </div>
+    `;
+    card.querySelector('.carousel-card-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      openProduct(product.id);
+    });
+    card.addEventListener('click', () => openProduct(product.id));
+    return card;
+  }
+
+  // ══════════════════════════════════════════════════════
+  // RENDER CAROUSELS + DOTS + ARROWS
+  // ══════════════════════════════════════════════════════
+  function renderCarousels() {
+    const tabGroups = { inicio: [], bonus: [], chef: [] };
+    products.forEach(p => { if (tabGroups[p.tab]) tabGroups[p.tab].push(p); });
+
+    Object.entries(tabGroups).forEach(([tab, prods]) => {
+      const wrap    = document.getElementById(`carousel-${tab}`);
+      const dotsEl  = document.getElementById(`dots-${tab}`);
+      const arrowL  = document.getElementById(`arrow-left-${tab}`);
+      const arrowR  = document.getElementById(`arrow-right-${tab}`);
+
+      prods.forEach(p => wrap.appendChild(buildCarouselCard(p)));
+
+      // Dots (só se > 1 card)
+      if (dotsEl && prods.length > 1) {
+        prods.forEach((_, i) => {
+          const dot = document.createElement('div');
+          dot.className = 'dot' + (i === 0 ? ' active' : '');
+          dotsEl.appendChild(dot);
+        });
+      }
+
+      // Arrows + sync
+      if (prods.length > 1) {
+        updateArrows(wrap, arrowL, arrowR, prods.length);
+
+        wrap.addEventListener('scroll', () => {
+          if (dotsEl) syncDots(wrap, dotsEl, prods.length);
+          updateArrows(wrap, arrowL, arrowR, prods.length);
+        }, { passive: true });
+
+        if (arrowL) arrowL.addEventListener('click', () => scrollCarousel(wrap, -1));
+        if (arrowR) arrowR.addEventListener('click', () => scrollCarousel(wrap, 1));
+      }
+    });
+  }
+
+  function getCardWidth(wrap) {
+    const card = wrap.querySelector('.carousel-card');
+    return card ? card.offsetWidth + 12 : 260;
+  }
+
+  function getCurrentIndex(wrap) {
+    return Math.round(wrap.scrollLeft / getCardWidth(wrap));
+  }
+
+  function scrollCarousel(wrap, dir) {
+    const idx = getCurrentIndex(wrap);
+    const target = (idx + dir) * getCardWidth(wrap);
+    wrap.scrollTo({ left: target, behavior: 'smooth' });
+  }
+
+  function updateArrows(wrap, arrowL, arrowR, count) {
+    if (!arrowL || !arrowR) return;
+    const idx = getCurrentIndex(wrap);
+    arrowL.classList.toggle('hidden', idx <= 0);
+    arrowR.classList.toggle('hidden', idx >= count - 1);
+  }
+
+  function syncDots(wrap, dotsEl, count) {
+    const idx = Math.max(0, Math.min(getCurrentIndex(wrap), count - 1));
+    dotsEl.querySelectorAll('.dot').forEach((d, i) => {
+      d.classList.toggle('active', i === idx);
+    });
+  }
+
+  // ══════════════════════════════════════════════════════
+  // NAVEGAÇÃO ENTRE ABAS
+  // ══════════════════════════════════════════════════════
+  const tabScreenMap = {
+    inicio: 'screen-inicio',
+    bonus:  'screen-bonus',
+    chef:   'screen-chef',
+    area:   'screen-area'
+  };
+
+  function switchTab(tab) {
+    if (tab === currentTab) return;
+    if (transitionLock) return;
+
+    previousTab = currentTab === 'product' ? previousTab : currentTab;
+    currentTab = tab;
+
+    document.querySelectorAll('.nav-item').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.tab === tab);
+    });
+
+    document.getElementById('header-default').style.display = '';
+    document.getElementById('header-product').style.display = 'none';
+
+    transitionToScreen(tabScreenMap[tab]);
+  }
+
+  function transitionToScreen(screenId) {
+    if (transitionLock) return;
+    transitionLock = true;
+
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('visible'));
+    window.scrollTo(0, 0);
+
+    setTimeout(() => {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      const target = document.getElementById(screenId);
+      target.classList.add('active');
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          target.classList.add('visible');
+          transitionLock = false;
+        });
+      });
+    }, 50);
+  }
+
+  // ══════════════════════════════════════════════════════
+  // ABRIR PRODUTO
+  // ══════════════════════════════════════════════════════
+  function openProduct(productId) {
+    const product = products.find(p => p.id === productId);
+    if (!product) return;
+
+    if (currentTab !== 'product') previousTab = currentTab;
+    currentTab = 'product';
+
+    document.getElementById('product-cover').src = product.cover;
+    document.getElementById('product-cover').alt = product.name;
+    document.getElementById('product-title').textContent = product.name;
+    document.getElementById('product-subtitle').textContent = product.subtitle;
+    document.getElementById('product-header-title').textContent = product.name;
+
+    const descEl = document.getElementById('product-desc');
+    descEl.textContent = product.desc || '';
+    descEl.style.display = product.desc ? '' : 'none';
+
+    const list = document.getElementById('materials-list');
+    list.innerHTML = '';
+
+    product.materials.forEach(mat => {
+      const isSoon = mat.link === 'em breve';
+      const isVideo = mat.tipo === 'video';
+
+      if (isSoon) {
+        const div = document.createElement('div');
+        div.className = 'material-item is-soon';
+        div.innerHTML = `
+          <div class="material-item-icon is-soon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </div>
+          <div class="material-item-center">
+            <div class="material-item-name is-soon">${mat.nome}</div>
+            <div class="material-item-status is-soon">Em breve</div>
+          </div>
+          <div class="material-item-right"><span class="badge-em-breve">EM BREVE</span></div>
+        `;
+        list.appendChild(div);
+      } else {
+        const a = document.createElement('a');
+        a.href = mat.link;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        a.className = 'material-item';
+        a.innerHTML = `
+          <div class="material-item-icon has-link">
+            ${isVideo ? svgPlay() : svgDoc()}
+          </div>
+          <div class="material-item-center">
+            <div class="material-item-name has-link">${mat.nome}</div>
+            <div class="material-item-status has-link">Acesso imediato</div>
+          </div>
+          <div class="material-item-right"><span class="material-arrow-icon">›</span></div>
+        `;
+        list.appendChild(a);
+      }
+    });
+
+    document.getElementById('header-default').style.display = 'none';
+    document.getElementById('header-product').style.display = '';
+
+    transitionToScreen('screen-product');
+  }
+
+  function svgDoc() {
+    return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>`;
+  }
+
+  function svgPlay() {
+    return `<svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><polygon points="10 8 16 12 10 16 10 8"/></svg>`;
+  }
+
+  // ══════════════════════════════════════════════════════
+  // VOLTAR
+  // ══════════════════════════════════════════════════════
+  document.getElementById('btn-back').addEventListener('click', () => {
+    currentTab = previousTab;
+    document.querySelectorAll('.nav-item').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.tab === previousTab);
+    });
+    document.getElementById('header-default').style.display = '';
+    document.getElementById('header-product').style.display = 'none';
+    transitionToScreen(tabScreenMap[previousTab] || 'screen-inicio');
+  });
+
+  // ══════════════════════════════════════════════════════
+  // NAVBAR
+  // ══════════════════════════════════════════════════════
+  document.querySelectorAll('.nav-item').forEach(btn => {
+    btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+  });
+
+  // ══════════════════════════════════════════════════════
+  // MODAL
+  // ══════════════════════════════════════════════════════
+  function openModal() {
+    document.getElementById('modal-overlay').classList.add('show');
+  }
+
+  function closeModal() {
+    document.getElementById('modal-overlay').classList.remove('show');
+  }
+
+  document.getElementById('btn-install-pwa').addEventListener('click', openModal);
+  document.getElementById('btn-modal-close').addEventListener('click', closeModal);
+  document.getElementById('modal-overlay').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+
+  // ══════════════════════════════════════════════════════
+  // TOAST BOAS-VINDAS
+  // ══════════════════════════════════════════════════════
+  function showWelcomeToast() {
+    if (localStorage.getItem('congela_visited') === 'true') return;
+    localStorage.setItem('congela_visited', 'true');
+
+    const toast = document.getElementById('toast');
+    toast.textContent = 'Bem-vinda, mamãe! 💚 Cozinha uma vez, resolve a semana inteira. Bora começar?';
+
+    setTimeout(() => {
+      toast.classList.add('show');
+      setTimeout(() => { toast.classList.remove('show'); }, 5000);
+    }, 800);
+  }
+
+  // ══════════════════════════════════════════════════════
+  // PWA — MANIFEST
+  // ══════════════════════════════════════════════════════
+  function injectManifest() {
+    const manifest = {
+      name: 'Congela e Pronto',
+      short_name: 'Congela e Pronto',
+      description: 'Mais tempo pra você, mais saúde pra ele...',
+      start_url: '.',
+      display: 'standalone',
+      background_color: '#0d2b0d',
+      theme_color: '#3DB54A',
+      orientation: 'portrait',
+      icons: [
+        { src: 'congela_logo.png', sizes: '192x192', type: 'image/png' },
+        { src: 'congela_logo.png', sizes: '512x512', type: 'image/png' }
+      ]
+    };
+    const blob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
+    const link = document.createElement('link');
+    link.rel = 'manifest';
+    link.href = URL.createObjectURL(blob);
+    document.head.appendChild(link);
+  }
+
+  // ══════════════════════════════════════════════════════
+  // PWA — SERVICE WORKER
+  // ══════════════════════════════════════════════════════
+  function registerServiceWorker() {
+    if (!('serviceWorker' in navigator)) return;
+
+    const swCode = `
+const CACHE_NAME = 'congela-v1';
+const LOCAL_ASSETS = [
+  '/',
+  '/index.html',
+  '/congela_logo.png',
+  '/capa_Congela___Pronto.png',
+  '/capa_100_Receitas_Criativas.png',
+  '/capa_Receitas_em_Video_2_0.png',
+  '/capa_Bonus_Exclusivos.png',
+  '/Sua_Chef_Pessoal.png'
+];
+
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache =>
+      Promise.allSettled(LOCAL_ASSETS.map(url => cache.add(url).catch(() => {})))
+    )
+  );
+  self.skipWaiting();
+});
+
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
+    )
+  );
+  self.clients.claim();
+});
+
+self.addEventListener('fetch', event => {
+  const isLocal = new URL(event.request.url).origin === self.location.origin;
+  if (isLocal) {
+    event.respondWith(
+      caches.match(event.request).then(cached => {
+        if (cached) return cached;
+        return fetch(event.request).then(response => {
+          if (response && response.status === 200) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then(c => c.put(event.request, clone));
+          }
+          return response;
+        }).catch(() => caches.match('/index.html'));
+      })
+    );
+  } else {
+    event.respondWith(
+      fetch(event.request).catch(() => caches.match(event.request))
+    );
+  }
+});
+`;
+    const blob = new Blob([swCode], { type: 'application/javascript' });
+    navigator.serviceWorker.register(URL.createObjectURL(blob), { scope: '/' }).catch(() => {});
+  }
+
+  // ══════════════════════════════════════════════════════
+  // INIT
+  // ══════════════════════════════════════════════════════
+  function init() {
+    injectManifest();
+    registerServiceWorker();
+    renderCarousels();
+
+    const first = document.getElementById('screen-inicio');
+    first.classList.add('active');
+    requestAnimationFrame(() => requestAnimationFrame(() => first.classList.add('visible')));
+
+    showWelcomeToast();
+  }
+
+  document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
