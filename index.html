@@ -337,11 +337,11 @@
 
     .carousel-card-img {
       width: 100%;
-      height: 160px;
-      object-fit: cover;
+      height: auto;
+      object-fit: contain;
       display: block;
-      background: rgba(61,181,74,0.06);
-      min-height: 160px;
+      background: #102e10;
+      border-radius: 12px 12px 0 0;
     }
 
     .carousel-card-body {
@@ -506,16 +506,15 @@
     .product-hero {
       position: relative;
       width: 100%;
-      height: 240px;
     }
 
     .product-hero-img {
       width: 100%;
-      height: 100%;
-      object-fit: cover;
+      height: auto;
+      max-height: 420px;
+      object-fit: contain;
       display: block;
-      background: rgba(61,181,74,0.06);
-      min-height: 240px;
+      background: #102e10;
     }
 
     .product-hero-overlay {
@@ -1096,7 +1095,7 @@
   <div class="screen" id="screen-product" role="main">
     <div class="page-product">
       <div class="product-hero">
-        <img src="" alt="" class="product-hero-img" id="product-cover" loading="lazy" decoding="async" onerror="this.style.background='#1a3d1a';this.style.minHeight='240px';">
+        <img src="" alt="" class="product-hero-img" id="product-cover" loading="lazy" decoding="async" onerror="this.style.background='#102e10';">
         <div class="product-hero-overlay"></div>
         <div class="product-hero-text">
           <div class="product-hero-name" id="product-title"></div>
@@ -1325,7 +1324,7 @@
     const card = document.createElement('div');
     card.className = 'carousel-card';
     card.innerHTML = `
-      <img src="${product.cover}" alt="${product.name}" class="carousel-card-img" loading="lazy" decoding="async" onerror="this.style.background='#1a3d1a';this.style.minHeight='160px';">
+      <img src="${product.cover}" alt="${product.name}" class="carousel-card-img" loading="lazy" decoding="async" onerror="this.style.background='#102e10';">
       <div class="carousel-card-body">
         <div class="carousel-card-name">${product.name}</div>
         <div class="carousel-card-sub">${product.subtitle}</div>
